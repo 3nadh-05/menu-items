@@ -87,6 +87,7 @@ export function BulkAdd({ onAddMany, categories, subcategoriesFor, onAddCategory
       active: true,
       availability: DEFAULT_AVAILABILITY,
       offer: null,
+      image: null,
     }))
     onAddMany(items)
     setText('')

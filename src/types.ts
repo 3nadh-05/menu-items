@@ -53,4 +53,5 @@ export interface MenuItemDraft {
   active: boolean
   availability: Availability
   offer: Offer | null
+  image: string | null
 }

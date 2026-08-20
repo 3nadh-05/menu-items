@@ -5,6 +5,7 @@ import { AvailabilityEditor } from './AvailabilityEditor'
 import { CatalogAutocomplete } from './CatalogAutocomplete'
 import { Combobox } from './Combobox'
 import { FoodTypeMark } from './FoodTypeDot'
+import { ImageUpload } from './ImageUpload'
 import { OfferEditor, discountedPrice } from './OfferEditor'
 
 const TYPES: FoodType[] = ['veg', 'non-veg', 'egg']
@@ -54,6 +55,7 @@ export function AddMenuItem({ onAdd, categories, subcategoriesFor, onAddCategory
   const [availability, setAvailability] = useState<Availability>(DEFAULT_AVAILABILITY)
   const [offerEnabled, setOfferEnabled] = useState(false)
   const [offer, setOffer] = useState<Offer>({ type: 'percent', value: 10 })
+  const [image, setImage] = useState<string | null>(null)
 
   function applySuggestionFromName(nextName: string) {
     const suggestion = suggestFor(nextName)
@@ -147,6 +149,7 @@ export function AddMenuItem({ onAdd, categories, subcategoriesFor, onAddCategory
     setAvailability(DEFAULT_AVAILABILITY)
     setOfferEnabled(false)
     setOffer({ type: 'percent', value: 10 })
+    setImage(null)
   }
 
   function handleSubmit(e: FormEvent) {
@@ -168,6 +171,7 @@ export function AddMenuItem({ onAdd, categories, subcategoriesFor, onAddCategory
       active,
       availability,
       offer: offerEnabled ? offer : null,
+      image,
     })
     reset()
   }
@@ -181,6 +185,8 @@ export function AddMenuItem({ onAdd, categories, subcategoriesFor, onAddCategory
         <CatalogAutocomplete value={name} onChange={handleNameChange} onPick={handlePick} />
         {badge && <p className={`mt-1.5 rounded-md border px-2.5 py-1.5 text-xs ${badge.tone}`}>{badge.text}</p>}
       </div>
+
+      <ImageUpload value={image} onChange={setImage} />
 
       <div className="grid grid-cols-2 gap-4">
         <div>

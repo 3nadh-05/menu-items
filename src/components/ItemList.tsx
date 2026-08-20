@@ -37,6 +37,11 @@ function ItemRow({ item, onUpdate }: { item: MenuItemDraft; onUpdate: (patch: Pa
     <li className={`rounded-lg border border-slate-200 bg-white p-3 transition ${item.active ? '' : 'opacity-50'}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-2">
+          {item.image ? (
+            <img src={item.image} alt="" className="h-10 w-10 shrink-0 rounded-md object-cover" />
+          ) : (
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-slate-100 text-xs text-slate-300">—</div>
+          )}
           <FoodTypeMark type={item.type} className="mt-1" />
           <div>
             <p className="text-sm font-medium text-slate-800">{item.name}</p>
