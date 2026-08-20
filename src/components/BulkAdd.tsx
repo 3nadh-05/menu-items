@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { CATEGORIES, subcategoriesFor } from '../data/catalog'
 import { suggestFor } from '../lib/match'
-import type { FoodType, MenuItemDraft } from '../types'
+import { DEFAULT_AVAILABILITY, type FoodType, type MenuItemDraft } from '../types'
+import { Combobox } from './Combobox'
 import { FoodTypeMark } from './FoodTypeDot'
 
 interface Row {
@@ -30,7 +30,14 @@ function parseLine(line: string): { name: string; price: number } {
 
 const PLACEHOLDER = `Paste one item per line, e.g.\nChicken Biryani - 249\nPaneer Tikka, 199\nMasala Dosa 120`
 
-export function BulkAdd({ onAddMany }: { onAddMany: (items: MenuItemDraft[]) => void }) {
+interface Props {
+  onAddMany: (items: MenuItemDraft[]) => void
+  categories: string[]
+  subcategoriesFor: (category: string) => string[]
+  onAddCategory: (name: string) => void
+}
+
+export function BulkAdd({ onAddMany, categories, subcategoriesFor, onAddCategory }: Props) {
   const [text, setText] = useState('')
   const [rows, setRows] = useState<Row[]>([])
 
@@ -77,6 +84,9 @@ export function BulkAdd({ onAddMany }: { onAddMany: (items: MenuItemDraft[]) => 
       variants: [{ id: uid(), sizeLabel: 'Regular', price: r.price }],
       source: r.source,
       matchConfidence: r.confidence,
+      active: true,
+      availability: DEFAULT_AVAILABILITY,
+      offer: null,
     }))
     onAddMany(items)
     setText('')
@@ -136,17 +146,15 @@ export function BulkAdd({ onAddMany }: { onAddMany: (items: MenuItemDraft[]) => 
                 <option value="non-veg">Non-veg</option>
                 <option value="egg">Egg</option>
               </select>
-              <select
-                className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs focus:border-orange-500 focus:outline-none"
+              <Combobox
                 value={r.category}
-                onChange={(e) => updateRow(r.id, { category: e.target.value, subcategory: subcategoriesFor(e.target.value)[0] ?? '' })}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+                onChange={(next) => {
+                  updateRow(r.id, { category: next, subcategory: subcategoriesFor(next)[0] ?? 'General' })
+                  onAddCategory(next)
+                }}
+                options={categories}
+                createLabel="+ Create"
+              />
               <div className="flex items-center justify-center gap-1">
                 <FoodTypeMark type={r.type} />
                 <button type="button" onClick={() => removeRow(r.id)} className="text-xs text-slate-400 hover:text-rose-600">

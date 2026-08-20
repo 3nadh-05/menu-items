@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AddMenuItem } from './components/AddMenuItem'
 import { BulkAdd } from './components/BulkAdd'
 import { ItemList } from './components/ItemList'
+import { CATEGORIES, subcategoriesFor as catalogSubcategoriesFor } from './data/catalog'
 import type { MenuItemDraft } from './types'
 
 type Mode = 'single' | 'bulk'
@@ -9,6 +10,33 @@ type Mode = 'single' | 'bulk'
 function App() {
   const [items, setItems] = useState<MenuItemDraft[]>([])
   const [mode, setMode] = useState<Mode>('single')
+  const [customCategories, setCustomCategories] = useState<string[]>([])
+  const [customSubcategories, setCustomSubcategories] = useState<Record<string, string[]>>({})
+
+  const categories = Array.from(new Set([...CATEGORIES, ...customCategories]))
+
+  function subcategoriesFor(category: string): string[] {
+    return Array.from(new Set([...catalogSubcategoriesFor(category), ...(customSubcategories[category] ?? [])]))
+  }
+
+  function addCategory(name: string) {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    if (categories.some((c) => c.toLowerCase() === trimmed.toLowerCase())) return
+    setCustomCategories((prev) => [...prev, trimmed])
+  }
+
+  function addSubcategory(category: string, name: string) {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    const existing = subcategoriesFor(category)
+    if (existing.some((s) => s.toLowerCase() === trimmed.toLowerCase())) return
+    setCustomSubcategories((prev) => ({ ...prev, [category]: [...(prev[category] ?? []), trimmed] }))
+  }
+
+  function updateItem(id: string, patch: Partial<MenuItemDraft>) {
+    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)))
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -47,14 +75,25 @@ function App() {
           </div>
 
           {mode === 'single' ? (
-            <AddMenuItem onAdd={(item) => setItems((prev) => [item, ...prev])} />
+            <AddMenuItem
+              onAdd={(item) => setItems((prev) => [item, ...prev])}
+              categories={categories}
+              subcategoriesFor={subcategoriesFor}
+              onAddCategory={addCategory}
+              onAddSubcategory={addSubcategory}
+            />
           ) : (
-            <BulkAdd onAddMany={(newItems) => setItems((prev) => [...newItems, ...prev])} />
+            <BulkAdd
+              onAddMany={(newItems) => setItems((prev) => [...newItems, ...prev])}
+              categories={categories}
+              subcategoriesFor={subcategoriesFor}
+              onAddCategory={addCategory}
+            />
           )}
         </section>
 
         <aside className="rounded-xl border border-slate-200 bg-white p-5">
-          <ItemList items={items} />
+          <ItemList items={items} onUpdateItem={updateItem} />
         </aside>
       </main>
     </div>

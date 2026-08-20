@@ -1,9 +1,11 @@
 import { useId, useState, type FormEvent } from 'react'
-import { CATEGORIES, subcategoriesFor } from '../data/catalog'
 import { suggestFor } from '../lib/match'
-import type { CatalogDish, FoodType, MenuItemDraft, Variant } from '../types'
+import { DEFAULT_AVAILABILITY, type Availability, type CatalogDish, type FoodType, type MenuItemDraft, type Offer, type Variant } from '../types'
+import { AvailabilityEditor } from './AvailabilityEditor'
 import { CatalogAutocomplete } from './CatalogAutocomplete'
+import { Combobox } from './Combobox'
 import { FoodTypeMark } from './FoodTypeDot'
+import { OfferEditor, discountedPrice } from './OfferEditor'
 
 const TYPES: FoodType[] = ['veg', 'non-veg', 'egg']
 
@@ -12,7 +14,7 @@ function uid() {
 }
 
 function suggestionBadge(source: MenuItemDraft['source'], confidence: number, matchedName?: string) {
-  if (confidence >= 0.9) {
+  if (confidence >= 0.85) {
     return { tone: 'bg-emerald-50 text-emerald-700 border-emerald-200', text: `Matched "${matchedName}" in the dish catalog — category, type & GST auto-filled` }
   }
   if (source === 'catalog') {
@@ -21,10 +23,18 @@ function suggestionBadge(source: MenuItemDraft['source'], confidence: number, ma
   if (source === 'inferred') {
     return { tone: 'bg-amber-50 text-amber-700 border-amber-200', text: 'Guessed category from the name — please confirm' }
   }
-  return { tone: 'bg-slate-50 text-slate-600 border-slate-200', text: "New dish — we couldn't guess, pick a category below" }
+  return { tone: 'bg-slate-50 text-slate-600 border-slate-200', text: "New dish — we couldn't guess, pick or create a category below" }
 }
 
-export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void }) {
+interface Props {
+  onAdd: (item: MenuItemDraft) => void
+  categories: string[]
+  subcategoriesFor: (category: string) => string[]
+  onAddCategory: (name: string) => void
+  onAddSubcategory: (category: string, name: string) => void
+}
+
+export function AddMenuItem({ onAdd, categories, subcategoriesFor, onAddCategory, onAddSubcategory }: Props) {
   const formId = useId()
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
@@ -40,6 +50,10 @@ export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void })
   const [badge, setBadge] = useState<{ tone: string; text: string } | null>(null)
   const [lastSource, setLastSource] = useState<MenuItemDraft['source']>('manual')
   const [lastConfidence, setLastConfidence] = useState(0)
+  const [active, setActive] = useState(true)
+  const [availability, setAvailability] = useState<Availability>(DEFAULT_AVAILABILITY)
+  const [offerEnabled, setOfferEnabled] = useState(false)
+  const [offer, setOffer] = useState<Offer>({ type: 'percent', value: 10 })
 
   function applySuggestionFromName(nextName: string) {
     const suggestion = suggestFor(nextName)
@@ -74,6 +88,19 @@ export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void })
     setLastSource('catalog')
     setLastConfidence(1)
     setBadge(suggestionBadge('catalog', 1, dish.name))
+  }
+
+  function commitCategory(next: string) {
+    setCategory(next)
+    setTouchedCategory(true)
+    onAddCategory(next)
+    const existingSub = subcategoriesFor(next)
+    setSubcategory(existingSub[0] ?? 'General')
+  }
+
+  function commitSubcategory(next: string) {
+    setSubcategory(next)
+    onAddSubcategory(category, next)
   }
 
   function addVariantRow() {
@@ -116,6 +143,10 @@ export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void })
     setTouchedType(false)
     setTouchedCategory(false)
     setBadge(null)
+    setActive(true)
+    setAvailability(DEFAULT_AVAILABILITY)
+    setOfferEnabled(false)
+    setOffer({ type: 'percent', value: 10 })
   }
 
   function handleSubmit(e: FormEvent) {
@@ -134,6 +165,9 @@ export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void })
       variants: finalVariants,
       source: lastSource,
       matchConfidence: lastConfidence,
+      active,
+      availability,
+      offer: offerEnabled ? offer : null,
     })
     reset()
   }
@@ -145,9 +179,7 @@ export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void })
           Name of the item <span className="text-orange-500">*</span>
         </label>
         <CatalogAutocomplete value={name} onChange={handleNameChange} onPick={handlePick} />
-        {badge && (
-          <p className={`mt-1.5 rounded-md border px-2.5 py-1.5 text-xs ${badge.tone}`}>{badge.text}</p>
-        )}
+        {badge && <p className={`mt-1.5 rounded-md border px-2.5 py-1.5 text-xs ${badge.tone}`}>{badge.text}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -201,22 +233,7 @@ export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void })
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             Category <span className="text-orange-500">*</span>
           </label>
-          <select
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-100"
-            value={category}
-            onChange={(e) => {
-              const next = e.target.value
-              setCategory(next)
-              setTouchedCategory(true)
-              setSubcategory(subcategoriesFor(next)[0] ?? '')
-            }}
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          <Combobox value={category} onChange={commitCategory} options={categories} placeholder="e.g. Breakfast" createLabel="+ Create category" />
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">GST</label>
@@ -234,6 +251,44 @@ export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void })
         </div>
       </div>
 
+      <div className="rounded-lg bg-slate-50 p-4">
+        <h3 className="mb-2 text-sm font-semibold text-slate-700">Availability</h3>
+        <AvailabilityEditor value={availability} onChange={setAvailability} />
+      </div>
+
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <input
+            type="checkbox"
+            className="h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400"
+            checked={offerEnabled}
+            onChange={(e) => setOfferEnabled(e.target.checked)}
+          />
+          Give an offer on this item
+        </label>
+        {offerEnabled && (
+          <div className="mt-2 flex items-center gap-3">
+            <OfferEditor value={offer} onChange={setOffer} />
+            {Number(price) > 0 && offer.value > 0 && (
+              <span className="text-xs text-slate-500">
+                <span className="line-through">₹{Number(price)}</span>{' '}
+                <span className="font-semibold text-emerald-600">₹{discountedPrice(Number(price), offer)}</span>
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+        <input
+          type="checkbox"
+          className="h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400"
+          checked={active}
+          onChange={(e) => setActive(e.target.checked)}
+        />
+        Show this item to customers immediately
+      </label>
+
       <button
         type="button"
         onClick={() => setAdvancedOpen((v) => !v)}
@@ -246,17 +301,13 @@ export function AddMenuItem({ onAdd }: { onAdd: (item: MenuItemDraft) => void })
         <div className="space-y-4 rounded-lg border border-dashed border-slate-200 bg-slate-50/60 p-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700">Subcategory</label>
-            <select
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-100"
+            <Combobox
               value={subcategory}
-              onChange={(e) => setSubcategory(e.target.value)}
-            >
-              {subcategoriesFor(category).map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+              onChange={commitSubcategory}
+              options={subcategoriesFor(category)}
+              placeholder="e.g. Weekend Specials"
+              createLabel="+ Create subcategory"
+            />
           </div>
 
           <div>

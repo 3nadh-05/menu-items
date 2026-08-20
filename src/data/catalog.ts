@@ -90,6 +90,41 @@ export const CATALOG: CatalogDish[] = [
   { name: 'Fresh Lime Soda', category: 'Beverages', subcategory: 'Soft Drinks', type: 'veg', gst: 5, keywords: ['lime', 'soda', 'nimbu'] },
   { name: 'Masala Chai', category: 'Beverages', subcategory: 'Tea & Coffee', type: 'veg', gst: 5, keywords: ['chai', 'tea', 'masala'] },
   { name: 'Filter Coffee', category: 'Beverages', subcategory: 'Tea & Coffee', type: 'veg', gst: 5, keywords: ['coffee', 'filter'] },
+  { name: 'Cold Coffee', category: 'Beverages', subcategory: 'Tea & Coffee', type: 'veg', gst: 5, keywords: ['cold', 'coffee'] },
+  { name: 'Iced Tea', category: 'Beverages', subcategory: 'Tea & Coffee', type: 'veg', gst: 5, keywords: ['iced', 'tea'] },
+  { name: 'Soft Drink', category: 'Beverages', subcategory: 'Soft Drinks', type: 'veg', gst: 5, keywords: ['soft', 'drink', 'coke', 'pepsi', 'sprite'] },
+  { name: 'Buttermilk', category: 'Beverages', subcategory: 'Lassi & Shakes', type: 'veg', gst: 5, keywords: ['buttermilk', 'majjige'] },
+
+  // Breakfast
+  { name: 'Poha', category: 'Breakfast', subcategory: 'North Indian Breakfast', type: 'veg', gst: 5, keywords: ['poha', 'pohe', 'flattened', 'rice'] },
+  { name: 'Upma', category: 'Breakfast', subcategory: 'South Indian Breakfast', type: 'veg', gst: 5, keywords: ['upma', 'uppma', 'rava'] },
+  { name: 'Aloo Paratha', category: 'Breakfast', subcategory: 'North Indian Breakfast', type: 'veg', gst: 5, keywords: ['aloo', 'paratha', 'potato'] },
+  { name: 'Chole Bhature', category: 'Breakfast', subcategory: 'North Indian Breakfast', type: 'veg', gst: 5, keywords: ['chole', 'bhature', 'chana', 'bhatura'] },
+  { name: 'Vada Pav', category: 'Breakfast', subcategory: 'Street Food', type: 'veg', gst: 5, keywords: ['vada', 'pav'] },
+  { name: 'Misal Pav', category: 'Breakfast', subcategory: 'Street Food', type: 'veg', gst: 5, keywords: ['misal', 'pav'] },
+  { name: 'Masala Omelette', category: 'Breakfast', subcategory: 'Egg Breakfast', type: 'egg', gst: 5, keywords: ['omelette', 'omelet', 'masala', 'egg'] },
+  { name: 'Boiled Eggs', category: 'Breakfast', subcategory: 'Egg Breakfast', type: 'egg', gst: 5, keywords: ['boiled', 'egg', 'eggs'] },
+  { name: 'Bread Butter Jam', category: 'Breakfast', subcategory: 'Continental Breakfast', type: 'veg', gst: 5, keywords: ['bread', 'butter', 'jam', 'toast'] },
+  { name: 'Cornflakes with Milk', category: 'Breakfast', subcategory: 'Continental Breakfast', type: 'veg', gst: 5, keywords: ['cornflakes', 'cereal', 'milk'] },
+
+  // Fast Food & Continental
+  { name: 'Veg Burger', category: 'Fast Food', subcategory: 'Burgers', type: 'veg', gst: 5, keywords: ['veg', 'burger'] },
+  { name: 'Chicken Burger', category: 'Fast Food', subcategory: 'Burgers', type: 'non-veg', gst: 5, keywords: ['chicken', 'burger'] },
+  { name: 'Paneer Burger', category: 'Fast Food', subcategory: 'Burgers', type: 'veg', gst: 5, keywords: ['paneer', 'burger'] },
+  { name: 'Veg Pizza', category: 'Fast Food', subcategory: 'Pizza', type: 'veg', gst: 5, keywords: ['veg', 'pizza', 'margherita'] },
+  { name: 'Chicken Pizza', category: 'Fast Food', subcategory: 'Pizza', type: 'non-veg', gst: 5, keywords: ['chicken', 'pizza'] },
+  { name: 'Cheese Pizza', category: 'Fast Food', subcategory: 'Pizza', type: 'veg', gst: 5, keywords: ['cheese', 'pizza'] },
+  { name: 'Veg Sandwich', category: 'Fast Food', subcategory: 'Sandwiches', type: 'veg', gst: 5, keywords: ['veg', 'sandwich'] },
+  { name: 'Grilled Chicken Sandwich', category: 'Fast Food', subcategory: 'Sandwiches', type: 'non-veg', gst: 5, keywords: ['grilled', 'chicken', 'sandwich'] },
+  { name: 'Club Sandwich', category: 'Fast Food', subcategory: 'Sandwiches', type: 'veg', gst: 5, keywords: ['club', 'sandwich'] },
+  { name: 'French Fries', category: 'Fast Food', subcategory: 'Sides', type: 'veg', gst: 5, keywords: ['french', 'fries', 'fry'] },
+  { name: 'Pasta Alfredo', category: 'Fast Food', subcategory: 'Pasta', type: 'veg', gst: 5, keywords: ['pasta', 'alfredo', 'white', 'sauce'] },
+  { name: 'Pasta Arrabbiata', category: 'Fast Food', subcategory: 'Pasta', type: 'veg', gst: 5, keywords: ['pasta', 'arrabbiata', 'red', 'sauce'] },
+  { name: 'Veg Momos', category: 'Fast Food', subcategory: 'Momos', type: 'veg', gst: 5, keywords: ['momo', 'momos', 'veg', 'dumpling'] },
+  { name: 'Chicken Momos', category: 'Fast Food', subcategory: 'Momos', type: 'non-veg', gst: 5, keywords: ['momo', 'momos', 'chicken', 'dumpling'] },
+  { name: 'Chicken Shawarma Roll', category: 'Fast Food', subcategory: 'Rolls', type: 'non-veg', gst: 5, keywords: ['shawarma', 'chicken', 'roll'] },
+  { name: 'Egg Roll', category: 'Fast Food', subcategory: 'Rolls', type: 'egg', gst: 5, keywords: ['egg', 'roll', 'kathi'] },
+  { name: 'Veg Frankie', category: 'Fast Food', subcategory: 'Rolls', type: 'veg', gst: 5, keywords: ['veg', 'frankie', 'roll', 'kathi'] },
 ]
 
 /** Category → default GST slab, used when a typed item has no catalog match. */
@@ -102,6 +137,8 @@ export const CATEGORY_DEFAULT_GST: Record<string, number> = {
   Chinese: 5,
   Desserts: 5,
   Beverages: 5,
+  Breakfast: 5,
+  'Fast Food': 5,
 }
 
 export const CATEGORIES = Array.from(new Set(CATALOG.map((d) => d.category)))

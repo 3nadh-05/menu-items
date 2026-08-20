@@ -15,6 +15,29 @@ export interface Variant {
   price: number
 }
 
+export type DayOfWeek = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun'
+
+export const ALL_DAYS: DayOfWeek[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+export interface Availability {
+  allDay: boolean
+  startTime: string
+  endTime: string
+  days: DayOfWeek[]
+}
+
+export const DEFAULT_AVAILABILITY: Availability = {
+  allDay: true,
+  startTime: '09:00',
+  endTime: '22:00',
+  days: [...ALL_DAYS],
+}
+
+export interface Offer {
+  type: 'percent' | 'flat'
+  value: number
+}
+
 export interface MenuItemDraft {
   id: string
   name: string
@@ -27,4 +50,7 @@ export interface MenuItemDraft {
   variants: Variant[]
   source: 'catalog' | 'inferred' | 'manual'
   matchConfidence: number
+  active: boolean
+  availability: Availability
+  offer: Offer | null
 }
